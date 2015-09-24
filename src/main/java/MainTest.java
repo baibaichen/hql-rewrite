@@ -1,3 +1,5 @@
+import com.yhd.hive.queryparser.PrePostOrderTraversor;
+import com.yhd.hive.queryparser.TestVisitor;
 import org.antlr.runtime.TokenRewriteStream;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.ql.Context;
@@ -13,12 +15,15 @@ public class MainTest {
         try {
             HiveConf conf = new HiveConf();
             Context ctx = new Context(conf);
-            String query = "select * from a";
+            String query = "select * from axxxvvbb";
 
             ParseDriver pd = new ParseDriver();
             ASTNode tree = pd.parse(query,ctx);
             tree = ParseUtils.findRootNonNullToken(tree);
-            
+
+            PrePostOrderTraversor traversor = new PrePostOrderTraversor(new TestVisitor());
+            traversor.traverse(tree);
+
             TokenRewriteStream ts = ctx.getTokenRewriteStream();
             System.out.println("\nRewritten Query:\n" + ts.toString("xxx"));
         }catch (ParseException ex){
