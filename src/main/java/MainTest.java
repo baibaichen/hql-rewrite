@@ -1,7 +1,7 @@
+import com.yhd.hive.HQLConvert;
 import com.yhd.hive.queryparser.PrePostOrderTraversor;
 import com.yhd.hive.queryparser.TestVisitor;
 import org.antlr.runtime.TokenRewriteStream;
-import org.apache.commons.logging.Log;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.ql.Context;
 import org.apache.hadoop.hive.ql.parse.ASTNode;
@@ -11,7 +11,9 @@ import org.apache.hadoop.hive.ql.parse.ParseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.StringReader;
 
 public class MainTest {
     private static final Logger LOG = LoggerFactory.getLogger(MainTest.class);
@@ -59,18 +61,27 @@ public class MainTest {
                     "  mrchnt_opat_type int, \n" +
                     "  mrchnt_city_id bigint)";
 
-            String dropHQL = "drop table if exists xx.trivial\n" +
+            String dropHQL = "drop table if exists\n" +
+                    " xx.trivial;\r\n" +
                     "drop table if exists xx.xxttrr";
+            BufferedReader in4 = new BufferedReader(new StringReader(dropHQL));
+
+            HQLConvert hanlder = new HQLConvert();
+            hanlder.processReader(in4);
+
+
+
             ParseDriver pd = new ParseDriver();
-            ASTNode tree = pd.parse(dropHQL,ctx);
+
+            ASTNode tree = pd.parse(createHQL,ctx);
             tree = ParseUtils.findRootNonNullToken(tree);
             TokenRewriteStream ts = ctx.getTokenRewriteStream();
 
             PrePostOrderTraversor traversor = new PrePostOrderTraversor(new TestVisitor(ts));
             traversor.traverse(tree);
 
-
             System.out.println("\nRewritten Query:\n" + ts.toString());
+
         }catch (ParseException ex){
             LOG.error(org.apache.hadoop.util.StringUtils.stringifyException(ex));
         }catch (IOException ex){
