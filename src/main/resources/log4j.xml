@@ -11,7 +11,7 @@
     </appender>
 
     <logger name="com.yhd.hive.queryparser.TestVisitor" additivity="false">
-        <level value ="DEBUG"/>
+        <level value ="INFO"/>
         <appender-ref ref="CONSOLE" />
     </logger>
 
