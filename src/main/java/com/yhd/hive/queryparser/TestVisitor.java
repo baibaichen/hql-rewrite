@@ -40,31 +40,35 @@ public class TestVisitor implements Visitor {
                 break;
         }
     }
-
-    private List<ASTNode> getChildren(ASTNode node)
-    {
-        //TODO: performance????
-        if (node.getChildren() == null)
-            return null;
-
-        List<ASTNode> tmp = new ArrayList<ASTNode>();
-        for (Node exp : node.getChildren())
-            tmp.add((ASTNode)exp);
-        return tmp;
-    }
-
     private void processTableName(ASTNode node){
-        Preconditions.checkState(node.getParent() instanceof ASTNode);
-        ASTNode pt = (ASTNode)node.getParent();
-        if ( pt.getType() == HiveParser.TOK_CREATETABLE
-                             ||
-            pt.getType() == HiveParser.TOK_DROPTABLE ){
 
-            //find target table
+        if (isTarget(node)){
             Preconditions.checkState(node.getChildCount() ==2,
                                      "Database name is missing for table %s",
                                      node.getChild(0).getText());
             rewriteStream.replace(node.getTokenStartIndex(),"replaced");
         }
+    }
+
+    private boolean isTarget(ASTNode node) {
+        Preconditions.checkState(node.getParent() instanceof ASTNode);
+        ASTNode pt = (ASTNode)node.getParent();
+        boolean createOrDropTable  =
+                pt.getType() == HiveParser.TOK_CREATETABLE
+                             ||
+            pt.getType() == HiveParser.TOK_DROPTABLE;
+        if (createOrDropTable)
+            return true;
+        if( pt.getType() == HiveParser.TOK_TAB){
+            Preconditions.checkState(pt.getParent() instanceof ASTNode);
+            pt = (ASTNode) pt.getParent();
+            if (pt == null || pt.getType() != HiveParser.TOK_DESTINATION)
+                return false;
+            Preconditions.checkState(pt.getParent() instanceof ASTNode);
+            pt = (ASTNode) pt.getParent();
+            if (pt != null && pt.getType() == HiveParser.TOK_INSERT)
+                return true;
+        }
+        return false;
     }
 }

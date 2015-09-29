@@ -9,6 +9,7 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <cdh.hadoop.version>2.5.0-cdh5.2.0</cdh.hadoop.version>
         <cdh.hive.version>0.13.1-cdh5.2.0</cdh.hive.version>
     </properties>
