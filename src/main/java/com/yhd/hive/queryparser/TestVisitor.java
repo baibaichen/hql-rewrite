@@ -39,11 +39,15 @@ public class TestVisitor implements Visitor {
 
   private void processTableName(ASTNode node) {
 
+    Preconditions.checkState(node.getChildCount() == 2,
+      "Database name is missing for table %s",
+      node.getChild(0).getText());
     if (isTarget(node)) {
-      Preconditions.checkState(node.getChildCount() == 2,
-        "Database name is missing for table %s",
-        node.getChild(0).getText());
       rewriteStream.replace(node.getTokenStartIndex(), "replaced");
+    } else {
+      ASTNode DB = (ASTNode) node.getChild(0);
+      ASTNode Table = (ASTNode) node.getChild(1);
+      LOG.info("{}.{}", DB.getText(),Table.getText());
     }
   }
 

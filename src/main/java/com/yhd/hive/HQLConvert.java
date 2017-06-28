@@ -10,6 +10,7 @@ import org.apache.hadoop.hive.ql.parse.ASTNode;
 import org.apache.hadoop.hive.ql.parse.ParseDriver;
 import org.apache.hadoop.hive.ql.parse.ParseException;
 import org.apache.hadoop.hive.ql.parse.ParseUtils;
+import org.apache.hadoop.hive.ql.processors.HiveCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +46,12 @@ public class HQLConvert {
     return line.startsWith("--") || line.startsWith("#");
   }
 
+  private boolean notSQL(String oneCmd){
+    String cmd_trimmed = oneCmd.trim();
+    String[] tokens = cmd_trimmed.split("\\s+");
+    HiveCommand hiveCommand = HiveCommand.find(tokens);
+    return hiveCommand != null;
+  }
   private void processLine(String line) throws ParseException {
     String command = "";
     for (String oneCmd : line.split(";")) {
@@ -58,6 +65,9 @@ public class HQLConvert {
       }
 
       if (StringUtils.isBlank(command)) {
+        continue;
+      }
+      if(notSQL( oneCmd)){
         continue;
       }
       rewrite(oneCmd);
