@@ -57,7 +57,7 @@ class LineageVisitor
             case HiveParser.TOK_INSERT:      //692
                 this.pCtx.setState(ParserContext.State.INSERT);
                 break;
-            case HiveParser.TOK_UNION:       //860
+            case HiveParser.TOK_UNIONALL:       //860
                 this.pCtx.setState(ParserContext.State.UNION);
                 break;
             case HiveParser.TOK_ORDERBY:     //738
@@ -119,7 +119,7 @@ class LineageVisitor
             case HiveParser.TOK_QUERY:
                 processQuery(astNode);
                 break;
-            case HiveParser.TOK_UNION:       //860
+            case HiveParser.TOK_UNIONALL:       //860
                 processUnion(astNode);
                 this.pCtx.clearState();
                 break;
