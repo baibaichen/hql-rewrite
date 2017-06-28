@@ -3,6 +3,7 @@ import com.yhd.hive.queryparser.PrePostOrderTraversor;
 import com.yhd.hive.queryparser.TestVisitor;
 import org.antlr.runtime.TokenRewriteStream;
 import org.apache.commons.lang3.text.StrSubstitutor;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.ql.Context;
 import org.apache.hadoop.hive.ql.parse.ASTNode;
@@ -21,8 +22,12 @@ import java.util.HashMap;
 
 public class MainTest {
     private static final Logger LOG = LoggerFactory.getLogger(MainTest.class);
+    private static final String HDFS_SESSION_PATH_KEY = "_hive.hdfs.session.path";
+    private static final String LOCAL_SESSION_PATH_KEY = "_hive.local.session.path";
+
     public static void main(String args[]){
         try {
+
 
             HashMap<String,String> params = new HashMap<String, String>();
             params.put(      "DB_TMP" , "testtmp");
@@ -36,7 +41,13 @@ public class MainTest {
             params.put("DB_INTERFACE" , "testinterface");
             params.put(       "label" , "$begin");
 
+
+            Configuration fixedconf = new Configuration();
+            fixedconf.set(HDFS_SESSION_PATH_KEY,  "/tmp");
+            fixedconf.set(LOCAL_SESSION_PATH_KEY, "/tmp");
+
             HiveConf conf = new HiveConf();
+            conf.addResource(fixedconf);
             Context ctx = new Context(conf);
             //String query  = "select * from db.tbl";
 
